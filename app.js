@@ -28,6 +28,29 @@ const articleSchema = new mongoose.Schema({
   },
 });
 
-const ArticleModel = mongoose.model('Article', articleSchema)
+const ArticleModel = mongoose.model("Article", articleSchema);
+
+app.get("/article", (req, res) => {
+  ArticleModel.find((err, result) => {
+    err ? res.send(err) : res.send(result);
+  });
+});
+
+app.post("/article", (req, res) => {
+  const post = new ArticleModel({
+    title: req.body.title,
+    content: req.body.content,
+  });
+
+  post.save((err) =>
+    err ? res.send(err) : res.send("Succesfully added a article")
+  );
+});
+
+app.delete("/article", (req, res) => {
+  ArticleModel.deleteMany((err) =>
+    err ? res.send(err) : res.send("Sucessfully deleted all articles")
+  );
+});
 
 app.listen(port, () => console.log(`Server is running on ${port}`));
