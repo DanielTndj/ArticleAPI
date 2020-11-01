@@ -17,4 +17,17 @@ mongoose.connect(
   (err) => (err ? console.log(err) : console.log("Database is running"))
 );
 
+const articleSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: [true, "Please fill this title field"],
+  },
+  content: {
+    type: String,
+    required: [true, "Please fill this content field"],
+  },
+});
+
+const ArticleModel = mongoose.model('Article', articleSchema)
+
 app.listen(port, () => console.log(`Server is running on ${port}`));
