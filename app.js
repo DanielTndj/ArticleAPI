@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const _ = require("lodash");
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -30,27 +31,33 @@ const articleSchema = new mongoose.Schema({
 
 const ArticleModel = mongoose.model("Article", articleSchema);
 
-app.get("/article", (req, res) => {
-  ArticleModel.find((err, result) => {
-    err ? res.send(err) : res.send(result);
+app
+  .route("/articles")
+  .get((req, res) => {
+    ArticleModel.find((err, result) => {
+      err ? res.send(err) : res.send(result);
+    });
+  })
+  .post((req, res) => {
+    const post = new ArticleModel({
+      title: req.body.title,
+      content: req.body.content,
+    });
+
+    post.save((err) =>
+      err ? res.send(err) : res.send("Succesfully added a article")
+    );
+  })
+  .delete((req, res) => {
+    ArticleModel.deleteMany((err) =>
+      err ? res.send(err) : res.send("Sucessfully deleted all articles")
+    );
   });
-});
 
-app.post("/article", (req, res) => {
-  const post = new ArticleModel({
-    title: req.body.title,
-    content: req.body.content,
+app.route("/articles/:title").get((req, res) => {
+  ArticleModel.findOne({ title: req.params.title }, (err, result) => {
+    result ? res.send(result) : res.send("Article not found");
   });
-
-  post.save((err) =>
-    err ? res.send(err) : res.send("Succesfully added a article")
-  );
-});
-
-app.delete("/article", (req, res) => {
-  ArticleModel.deleteMany((err) =>
-    err ? res.send(err) : res.send("Sucessfully deleted all articles")
-  );
 });
 
 app.listen(port, () => console.log(`Server is running on ${port}`));
