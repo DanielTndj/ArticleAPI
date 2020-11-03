@@ -54,10 +54,33 @@ app
     );
   });
 
-app.route("/articles/:title").get((req, res) => {
-  ArticleModel.findOne({ title: req.params.title }, (err, result) => {
-    result ? res.send(result) : res.send("Article not found");
+app
+  .route("/articles/:title")
+  .get((req, res) => {
+    ArticleModel.findOne({ title: req.params.title }, (err, result) => {
+      result ? res.send(result) : res.send("Article not found");
+    });
+  })
+  .put((req, res) => {
+    ArticleModel.update(
+      { title: req.params.title },
+      { title: req.body.title, content: req.body.content },
+      { overwrite: true },
+      (err, result) => (err ? res.send(err) : res.send(result))
+    );
+  })
+  .patch((req, res) => {
+    ArticleModel.update(
+      { title: req.params.title },
+      { $set: req.body },
+      { overwrite: false },
+      (err, result) => (err ? res.send(err) : res.send(result))
+    );
+  })
+  .delete((req, res) => {
+    ArticleModel.deleteOne({ title: req.params.title }, (err) =>
+      err ? res.send(err) : res.send("Successfully delete article")
+    );
   });
-});
 
 app.listen(port, () => console.log(`Server is running on ${port}`));
